@@ -14,6 +14,9 @@ model = ChatOpenAI()
 
 # 연산자 | 로 결합한다
 
+'''
+template | model 는 template.__or__(model) 과 동일, 즉 ChatPromptTemplate.__or__ 메소드를 override 한 것
+'''
 chatbot = template | model
 
 # 사용한다
