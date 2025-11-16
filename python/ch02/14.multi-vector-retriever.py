@@ -31,9 +31,25 @@ prompt_text = '다음 문서의 요약을 생성하세요:\n\n{doc}'
 
 prompt = ChatPromptTemplate.from_template(prompt_text)
 llm = ChatOpenAI(temperature=0, model='gpt-4o-mini')
+
+
+'''
+{'doc': lambda x: x.page_content}
+chunk = x 이기 때문에 
+{'doc': doc.page_content}가 prompt.invoke()의 인자로 들어감
+prompt는 템플릿에서 {doc}을 doc.page_content로 치환하고 llm에게 전달
+
+{'doc': lambda x: x.page_content}
+위 코드 즉 RunnableMap은 “입력이 들어오면 dict 매핑을 실행하는 객체”다.
+
+StrOutputParser : 메시지 객체에서 순수한 content만 추출해서 반환하는 클래스
+'''
 summarize_chain = {
     'doc': lambda x: x.page_content} | prompt | llm | StrOutputParser()
 
+'''
+max_concurrency = LLM을 동시에 호출하는 수를 지정
+'''
 summaries = summarize_chain.batch(chunks, {'max_concurrency': 5})
 
 # 벡터 저장소는 하위 청크를 인덱싱하는 데 사용
@@ -47,6 +63,14 @@ vectorstore = PGVector(
 store = InMemoryStore()
 id_key = 'doc_id'
 
+'''
+문서에 대한 요약을 벡터스토어에 저장하고 메타데이터에 doc_id를 저장
+docstore에는 원본 문서를 저장
+질문과 유사한 요약을 벡터스토어에서 찾고 그에 해당하는 doc_id를 docstore에서 가져온다.
+
+요약 뿐만 아니라, 제목, 키워드 등을 벡터스토어에 저장하고 메타데이터에 doc_id를 저장하고 검색하면
+chunk 전체를 임베딩해서 검색하는 것 보다 좋은 결과를 가져올 수 있다.
+'''
 # 원본 문서를 문서 저장소에 보관하면서 벡터 저장소에 요약을 인덱싱
 retriever = MultiVectorRetriever(
     vectorstore=vectorstore,
@@ -57,6 +81,9 @@ retriever = MultiVectorRetriever(
 # 문서와 동일한 길이가 필요하므로 summaries에서 chunks로 변경
 doc_ids = [str(uuid.uuid4()) for _ in chunks]
 
+'''
+summaries를 루프돌면서 i는 인덱스, s는 summaries[i]를 반환
+'''
 # 각 요약은 doc_id를 통해 원본 문서와 연결
 summary_docs = [
     Document(page_content=s, metadata={id_key: doc_ids[i]})

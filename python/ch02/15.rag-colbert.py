@@ -12,6 +12,13 @@ pip install -U ragatouille transformers
 from ragatouille import RAGPretrainedModel
 import requests
 
+'''
+colbert : 문서 전체를 임베딩하는게 아닌 토큰 별로 임베딩하여 벡터스토어에 저장
+쿼리도 토큰 별로 임베딩하여 벡터스토어에 저장된 데이터와 비교
+-> 기존 문서 전체 임베딩 방식보다 정확도가 높음
+
+RAGPretrainedModel : colbert를 쉽게 사용할 수 있도록 해주는 인터페이스
+'''
 RAG = RAGPretrainedModel.from_pretrained("colbert-ir/colbertv2.0")
 
 
@@ -61,5 +68,8 @@ results = RAG.search(query="What animation studio did Miyazaki found?", k=3)
 print(results)
 
 # 랭체인에 전달
+'''
+as_langchain_retriever : RAGPretrainedModel을 LangChain Retriever 인터페이스로 변환
+'''
 retriever = RAG.as_langchain_retriever(k=3)
 retriever.invoke("What animation studio did Miyazaki found?")

@@ -8,6 +8,9 @@ collection_name = 'my_docs'
 embeddings_model = OpenAIEmbeddings(model='text-embedding-3-small')
 namespace = 'my_docs_namespace'
 
+'''
+jsonb : 바이너리 json
+'''
 vectorstore = PGVector(
     embeddings=embeddings_model,
     collection_name=collection_name,
