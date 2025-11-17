@@ -4,6 +4,12 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import chain
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
+'''
+의미론적 라우팅 : 사용자의 질문을 분석해 가장 적합한 LLM 체인 또는 데이터 소스를 자동으로 선택하는 기술
+라우팅 방법은 아래 2가지 방법이 있다.
+1) LLM이 질문을 분석해서 라우팅 (이전 예제)
+2) 질문을 임베딩하여 유사도 측정
+'''
 physics_template = '''당신은 매우 똑똑한 물리학 교수입니다. 
     당신은 물리학에 대한 질문에 간결하고 쉽게 이해할 수 있는 방식으로 대답하는 데 뛰어납니다.
     당신이 질문에 대한 답을 모를 때는 모른다고 인정합니다.

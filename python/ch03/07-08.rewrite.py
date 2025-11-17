@@ -93,7 +93,12 @@ rewrite_prompt = ChatPromptTemplate.from_template(
 답변:
 ''')
 
+'''
+strip 양쪽 끝에 있는 특정 문자를 제거
+예) "'message'"** -> "message"** -> "message"
 
+@chain을 붙이지 않아도 | 다음에 일반 파이썬 함수를 추가하는 경우, 자동으로 Runnable로 감싸줌
+'''
 def parse_rewriter_output(message):
     return message.content.strip('\'').strip('**')
 

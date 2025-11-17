@@ -40,7 +40,14 @@ def parse_queries_output(message):
 
 query_gen = perspectives_prompt | llm | parse_queries_output
 
-
+'''
+doc 목록을 평탄화 하고 중복 제거
+[
+    [doc1, doc2],
+    [doc3, doc1]
+]
+-> [doc1, doc2, doc3]
+'''
 def get_unique_union(document_lists):
     # 목록 여러 개를 포함한 리스트를 평탄화하고 중복 제거
     deduped_docs = {

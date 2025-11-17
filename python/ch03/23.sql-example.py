@@ -21,9 +21,15 @@ print(db.get_usable_table_names())
 
 llm = ChatOpenAI(model='gpt-4o', temperature=0)
 
+'''
+create_sql_query_chain : db 스키마 정보를 스캔, 쿼리를 분석하여 스키마에 맞는 SQL쿼리를 생성하여 반환해준다.
+'''
 # 질문을 SQL 쿼리로 변환
 write_query = create_sql_query_chain(llm, db)
 
+'''
+QuerySQLDatabaseTool : SQL 쿼리를 받아서 DB를 조회하고 결과를 파이썬 객체(list, dict)로 반환
+'''
 # SQL 쿼리 실행
 execute_query = QuerySQLDatabaseTool(db=db)
 

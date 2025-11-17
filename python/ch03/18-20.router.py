@@ -6,6 +6,9 @@ from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnableLambda
 
 
+'''
+datasource 필드에는 'python_docs', 'js_docs' 중 1개의 문자열만 값으로 허용
+'''
 # 데이터 모델 클래스
 class RouteQuery(BaseModel):
     datasource: Literal['python_docs', 'js_docs'] = Field(
@@ -49,7 +52,12 @@ def choose_route(result):
     else:
         return 'chain for js_docs'
 
+'''
+callable인 경우 (callable() 함수로 확인가능) 아래와 같이 작성 가능
 
+full_chain = router | choose_route
+-> 랭체인 LCEL 파이프가 알아서 Runnable로 매핑해준다.
+'''
 full_chain = router | RunnableLambda(choose_route)
 
 result = full_chain.invoke({'question': question})
