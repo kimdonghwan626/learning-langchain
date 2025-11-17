@@ -24,11 +24,11 @@ messages = [
 # 축약 설정
 trimmer = trim_messages(
     max_tokens=65,
-    strategy='last',
+    strategy='last', ## 'first' : 최신 메시지 부터 삭제, 'last' : 오래된 메시지부터 삭제
     token_counter=ChatOpenAI(model='gpt-4o-mini'),
-    include_system=True,
-    allow_partial=False,
-    start_on='human',
+    include_system=True, ##시스템 메시지 유지 여부
+    allow_partial=False, ## max_tokens을 넘어갈 때, message 통째로 버릴지, message 일부만 자르고 살릴지 여부를 결정
+    start_on='human', ## 어떤 메시지부터 잘라내야 할지 결정 'human' : 질문, 답변 삭제, 'assistant' : 답변 삭제
 )
 
 # 축약 적용

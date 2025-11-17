@@ -24,9 +24,15 @@ builder.add_node('chatbot', chatbot)
 builder.add_edge(START, 'chatbot')
 builder.add_edge('chatbot', END)
 
+'''
+MemorySaver : 상태를 메모리에 저장 (테스트용)
+'''
 # MemorySaver로 영속성 추가
 graph = builder.compile(checkpointer=MemorySaver())
 
+'''
+랭그래프에서의 스레드 : 대화 ID라고 생각하면 됨, 스레드 별로 Status가 존재
+'''
 # 스레드 설정
 thread1 = {'configurable': {'thread_id': '1'}}
 

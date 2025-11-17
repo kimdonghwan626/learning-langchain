@@ -22,6 +22,9 @@ messages = [
     ),
 ]
 
+'''
+-> sys, sys, human, human, ai, ai -> sys, human, ai (개행을 두고 메시지를 병합)
+'''
 # 연속된 메시지를 병합
 merged = merge_message_runs(messages)
 print(merged)
