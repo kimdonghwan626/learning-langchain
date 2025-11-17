@@ -133,8 +133,8 @@ def generate_answer(state: State) -> State:
         prompt = insurance_faqs_prompt
     messages = [
         prompt,
-        *state['messages'],
-        HumanMessage(f'Documents: {state['documents']}'),
+        *state['messages'], ## * = interator
+        HumanMessage(f'Documents: {state['documents']}'), ## f-string {표현식} 에 변수 값을 치환
     ]
     res = model_high_temp.invoke(messages)
     return {
