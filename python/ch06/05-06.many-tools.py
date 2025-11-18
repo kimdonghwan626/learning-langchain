@@ -25,6 +25,9 @@ tools = [search, calculator]
 embeddings = OpenAIEmbeddings()
 model = ChatOpenAI(temperature=0.1)
 
+'''
+tool.name은 함수 이름, tool.description은 함수 주석이 되는 듯
+'''
 tools_retriever = InMemoryVectorStore.from_documents(
     [Document(tool.description, metadata={'name': tool.name}) for tool in tools],
     embeddings,
@@ -35,13 +38,19 @@ class State(TypedDict):
     messages: Annotated[list, add_messages]
     selected_tools: list[str]
 
-
+'''
+모든 툴 목록을 모델에 바인딩하면 모델이 툴을 선택하기 위해 속도가 느려지는 경우가 있음.
+질문을 바탕으로 사용할 만한 툴 목록만 모델에 바인딩
+'''
 def model_node(state: State) -> State:
     selected_tools = [tool for tool in tools if tool.name in state['selected_tools']]
     res = model.bind_tools(selected_tools).invoke(state['messages'])
     return {'messages': res}
 
-
+'''
+질문과 유사한 문서(툴 정보)를 벡터스토어에 저장
+-> 메타데이터에서 툴 이름을 가져온다.
+'''
 def select_tools(state: State) -> State:
     query = state['messages'][-1].content
     tool_docs = tools_retriever.invoke(query)

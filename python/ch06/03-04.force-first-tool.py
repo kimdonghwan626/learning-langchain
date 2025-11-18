@@ -11,7 +11,9 @@ from langgraph.graph import START, StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 
-
+'''
+ast.literal_eval : 문자열이 숫자 literal인 경우, 계산해서 반환됨. 함수 호출 등이 포함되어 있으면 예외 처리
+'''
 @tool
 def calculator(query: str) -> str:
     '''계산기. 수식만 입력받습니다.'''
@@ -31,7 +33,10 @@ def model_node(state: State) -> State:
     res = model.invoke(state['messages'])
     return {'messages': res}
 
-
+'''
+first_model : LLM 호출 없이 tool call 호출
+uuid4().hex : 무작위 UUID 생성 -> hex로 하이픈 제거
+'''
 def first_model(state: State) -> State:
     query = state['messages'][-1].content
     search_tool_call = ToolCall(
