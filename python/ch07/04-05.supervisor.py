@@ -4,7 +4,10 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, MessagesState, START
 from pydantic import BaseModel
 
-
+'''
+멀티 에이전트 아키텍처
+-> 슈퍼바이저 아키텍처 : 관리자가 중간에서 어떤 에이전트를 호출할 지 결정
+'''
 class SupervisorDecision(BaseModel):
     next: Literal['researcher', 'coder', 'FINISH']
 
@@ -106,6 +109,14 @@ initial_state = {
     'next': 'supervisor',
 }
 
+'''
+graph.invoke는 최종 결과 state만 반환한다.
+graph.stream을 호출하면 각 노드의 출력을 딕셔너리 형태로 yield한다. (model의 stream과 다름)
+
+d = {"a": 1, "b": 2}
+-> d.items() -> dict_items([('a', 1), ('b', 2)]) (dict_items : iterable 객체)
+-> list(d.items()) -> [('a', 1), ('b', 2)]
+'''
 for output in graph.stream(initial_state):
     node_name, node_result = list(output.items())[0]
     print(f'\n현재 노드: {node_name}')

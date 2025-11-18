@@ -1,7 +1,10 @@
 from typing import TypedDict
 from langgraph.graph import START, StateGraph
 
+'''
+부모 그래프에서 서브그래프 직접 호출하는 예제
 
+'''
 # 부모 그래프와 서브그래프에서 사용할 상태
 class State(TypedDict):
     foo: str  # 서브그래프와 이 키를 공유

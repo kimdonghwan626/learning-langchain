@@ -1,6 +1,10 @@
 from typing import TypedDict
 from langgraph.graph import START, StateGraph
 
+'''
+서브 그래프와 스키마가 일치하지 않아 서브 그래프의 입출력에 함수를 두는 예제
+'''
+
 class State(TypedDict):
     foo: str
 
