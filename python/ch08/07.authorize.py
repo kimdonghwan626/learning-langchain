@@ -72,6 +72,10 @@ input = {
 
 config = {"configurable": {"thread_id": "1"}}
 
+'''
+interrupt_before : "model" 이라고 명시하면 model 노드에 접근하기 전에 그래프가 중단되고
+사용자 개입을 기다리는 모드로 돌아간다.
+'''
 output = graph.stream(input, config, interrupt_before=["model"])
 
 for c in output:

@@ -85,6 +85,9 @@ updated_messages = state.values['messages'].copy()
 updated_messages[0] = HumanMessage(content="영화 보이후드의 촬영 기간은 얼마나 되나요?")
 
 # 상태 업데이트 적용
+'''
+update_state는 그래프를 실행하지 않고 state 값만 변경
+'''
 update = {'messages': updated_messages}
 graph.update_state(config, update)
 

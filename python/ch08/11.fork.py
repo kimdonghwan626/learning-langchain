@@ -78,6 +78,12 @@ output = graph.stream(input, config)
 for c in output:
     print(c)
 
+'''
+그래프는 노드 실행 후마다 state를 모두 저장하고 있음
+2번 째 히스토리에서 재실행
+
+history[0] 은 시작 전 상태
+'''
 history = [
     state for state in
     graph.get_state_history(config)

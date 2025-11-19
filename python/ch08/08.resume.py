@@ -81,6 +81,10 @@ for c in output:
     print(c)
 
 # 두 번째 실행: 체크포인트에서 재개
+'''
+None을 넣으면 interrupt된 지점에서 이어서 실행
+이전 실행에서 저장된 checkpoint를 자동으로 불러온다.
+'''
 output = graph.stream(None, config)
 
 for c in output:

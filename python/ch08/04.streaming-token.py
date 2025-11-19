@@ -63,8 +63,18 @@ async def main():
         ]
     }
     config = {'configurable': {'thread_id': '1'}}
+    
+    '''
+    output : 비동기 Interator 반환
+    
+    astream_events : 내부에서 close를 해주기 때문에 aclosing으로 감쌀 필요 없음
+    '''
     output = graph.astream_events(input, config, version="v2")
 
+    '''
+    async for : 비동기 반복문, 이벤트가 발생할 때마다 event 객체가 yield 됨
+    TODO 스트리밍 응답이 어떤 식으로 오는지 확인 필요
+    '''
     async for event in output:
         if event["event"] == "on_chat_model_stream":
             content = event["data"]["chunk"].content
