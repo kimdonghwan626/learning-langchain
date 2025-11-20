@@ -1,6 +1,53 @@
+'''
+벡터 임베딩 저장을 위한 pgvector 활성화
+create extension vector;
+
+문서를 저장할 documents 테이블 생성
+create table documents (
+    id bigserial primary key,
+    content text,   -- Document.pageContent
+    metadata jsonb, -- Document.metadata
+    embedding vector(1536) -- OpenAI 임베딩
+);
+
+문서 검색 함수
+create function match_documents (
+    query_embedding vector(1536),
+    match_count int DEFAULT null,
+    filter jsonb DEFAULT '{}'
+)
+returns table (
+    id bigint,
+    content text,
+    metadata jsonb,
+    embedding jsonb,
+    similarity float
+)
+language plpgsql
+as $$
+#variable_conflict use_column
+begin
+    return query
+    select
+        id,
+        content,
+        metadata,
+        (embedding::text)::jsonb as embedding,
+        1 - (documents.embedding <=> query_embedding) as similarity
+    from documents
+    where metadata @> filter
+    order by documents.embedding <=> query_embedding
+    limit match_count;
+end;
+$$;
+'''
+
 import os
 import dotenv
 
+'''
+현재 디렉토리에 있는 .env 파일을 읽어서 환경변수로 등록해줌
+'''
 dotenv.load_dotenv()
 
 from langchain_community.vectorstores import SupabaseVectorStore
@@ -14,7 +61,9 @@ supabase: Client = create_client(supabase_url, supabase_key)
 
 embeddings = OpenAIEmbeddings()
 
-
+'''
+만약 슈파베이스에 등록된 여러 테이블, 함수를 사용하고 싶다면 그 만큼 벡터스토어 인스턴스를 생성하면 됨.
+'''
 vector_store = SupabaseVectorStore(
     embedding=embeddings,
     client=supabase,
