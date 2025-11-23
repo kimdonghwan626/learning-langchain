@@ -3,6 +3,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+'''
+실험 평가 데이터셋 관리 플랫폼에 접근하기 위한 클라이언트
+환경 변수에 저장된 LANGSMITH_API_KEY를 기반으로 랭스미스 서버에 연결
+'''
 client = Client()
 
 # 데이터셋 제작
@@ -19,6 +23,9 @@ examples = [
      "Steve Johnson이 2009년에 가장 많은 매출을 올렸습니다"),
 ]
 
+'''
+클라이언트에 동일한 이름의 데이터 셋이 있는지 확인하고 없으면 생성
+'''
 dataset_name = "sql-agent-response"
 if not client.has_dataset(dataset_name=dataset_name):
     dataset = client.create_dataset(dataset_name=dataset_name)

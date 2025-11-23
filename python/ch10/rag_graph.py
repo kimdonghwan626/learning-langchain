@@ -68,6 +68,9 @@ def retrieve_and_generate(state):
 
     retriever = vectorstore.as_retriever()
 
+    '''
+    랭체인 허브에서 프롬프트 템플릿을 가져옴
+    '''
     prompt = hub.pull("rlm/rag-prompt")
     llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
 

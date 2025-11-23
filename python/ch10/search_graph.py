@@ -12,6 +12,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain import hub  # Prompt
 
+'''
+질문으로 관련 문서가 있는지 확인, 없으면 웹 검색을 수행하여 컨텍스트 추가하고 답변 생성
+'''
+
 prompt = hub.pull("rlm/rag-prompt")
 
 # LLM
