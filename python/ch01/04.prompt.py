@@ -1,5 +1,9 @@
 from langchain_core.prompts import PromptTemplate
 
+'''
+PromptTemplate는 Human 메시지만 생성
+ChatPromptTemplate는 System, Human, Assistant 생성
+'''
 template = PromptTemplate.from_template('''아래 작성한 컨텍스트(Context)를 기반으로
     질문(Question)에 대답하세요. 제공된 정보로 대답할 수 없는 질문이라면 "모르겠어요." 라고 답하세요.
 
