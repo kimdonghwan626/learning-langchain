@@ -13,6 +13,10 @@ DEFAULT_DATASET_NAME = "langchain-blogs-qa"
 
 llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
+'''
+퀴즈 답안을 받아 정확성을 평가하고, 기준을 만족하면 True를 반환한다.
+판단 근거를 단계적으로 설명한다.
+'''
 EVALUATION_PROMPT = f"""You are a teacher grading a quiz.
 
 You will be given a QUESTION, the GROUND TRUTH (correct) RESPONSE, and the STUDENT RESPONSE.
@@ -57,7 +61,9 @@ def transform_agent_outputs(outputs: dict) -> dict:
 
 # Evaluator function
 
-
+'''
+최종 응답이 참조 응답과 동일한지 평가
+'''
 async def evaluate_agent(inputs: dict, outputs: dict, reference_outputs: dict) -> bool:
     """Evaluate if the final response is equivalent to reference response."""
 
@@ -89,10 +95,10 @@ async def run_eval(
 ) -> EvaluationResults:
     dataset = client.read_dataset(dataset_name=dataset_name)
     results = await aevaluate(
-        run_graph,
-        data=dataset,
-        evaluators=[evaluate_agent],
-        experiment_prefix=experiment_prefix,
+        run_graph, ## 그래프를 실행 -> 학생 답변
+        data=dataset, ## 데이터 셋 각 row를 실행
+        evaluators=[evaluate_agent], ## 학생 답변과 참조 답변을 가지고 평가
+        experiment_prefix=experiment_prefix, ## 평가 이름 접두사
     )
     return results
 

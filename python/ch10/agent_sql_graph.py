@@ -15,17 +15,34 @@ from langchain_openai import ChatOpenAI
 from langchain_community.utilities import SQLDatabase
 
 db = SQLDatabase.from_uri("sqlite:///Chinook.db")
+'''
+db.dialect : DB 방언, 연결된 DB 종류 및 SQL 문법 정보를 담고 있는 객체
+'''
 print(db.dialect)
 print(db.get_usable_table_names())
+'''
+db.run을 실행하면 결과는 LLM이 받기 쉽게 문자열로 반환됨
+'''
 db.run("SELECT * FROM Artist LIMIT 10;")
+
 # gpt4o
 llm = ChatOpenAI(model="gpt-4o", temperature=0)
 experiment_prefix = "sql-agent-gpt4o"
 metadata = "Chinook, gpt-4o agent"
+
 # SQL toolkit
+'''
+SQLDatabase 객체와 LLM을 바탕으로 에이전트가 SQL 데이터베이스에 접근할 때 필요한 도구들을
+자동 생성하는 클래스
+
+get_tools : 테이블 조회, 스키마 조회, 쿼리 실행과 같은 툴 객체 목록을 반환
+'''
 toolkit = SQLDatabaseToolkit(db=db, llm=llm)
 tools = toolkit.get_tools()
 
+'''
+문법에 맞지 않는 쿼리를 입력으로 받은 경우, 수정해서 반환
+'''
 # Query checking
 query_check_system = """You are a SQL expert with a strong attention to detail.
 Double check the SQLite query for common mistakes, including:
@@ -53,7 +70,9 @@ def check_query_tool(query: str) -> str:
     """
     return query_check.invoke({"query": query}).content
 
-
+'''
+쿼리 결과 평가, 결과가 없는 경우, 다시 시도
+'''
 # Query result checking
 query_result_check_system = """You are grading the result of a SQL query from a DB. 
 - Check that the result is not empty.
@@ -100,7 +119,9 @@ def _print_event(event: dict, _printed: set, max_length=1500):
             print(msg_repr)
             _printed.add(message.id)
 
-
+'''
+repr : 파이썬 객체를 문자열로 변환하는 내장 함수
+'''
 def handle_tool_error(state) -> dict:
     error = state.get("error")
     tool_calls = state["messages"][-1].tool_calls
@@ -114,13 +135,18 @@ def handle_tool_error(state) -> dict:
         ]
     }
 
-
+'''
+LLM이 의미 없는 빈 답을 내면 강제로 재프롬프트해서 실제 출력이 나올 때까지 루프
+'''
 # Assistant
 class Assistant:
 
     def __init__(self, runnable: Runnable):
         self.runnable = runnable
 
+    '''
+    객체를 함수처럼 ()로 호출했을 때 실행되는 특수 메소드
+    '''
     def __call__(self, state: State, config: RunnableConfig):
         while True:
             # Append to state
@@ -176,6 +202,9 @@ builder.add_node("assistant", Assistant(assistant_runnable))
 builder.add_node("tools", create_tool_node_with_fallback(tools))
 
 # Define edges: these determine how the control flow moves
+'''
+START를 assistant에 연결하는 것과 거의 비슷
+'''
 builder.set_entry_point("assistant")
 builder.add_conditional_edges(
     "assistant",
@@ -188,5 +217,16 @@ builder.add_conditional_edges(
 builder.add_edge("tools", "assistant")
 
 # The checkpointer lets the graph persist its state
+'''
+디스크에 저장하지 않고, 메모리에만 저장되는 SQLite DB를 만듬.
+'''
 memory = SqliteSaver.from_conn_string(":memory:")
 graph = builder.compile(checkpointer=memory)
+
+'''
+입력을 받으면 툴을 사용하여,
+-> 쿼리 생성 -> 쿼리 체크
+-> 쿼리 실행 -> 결과 체크
+-> 응답 체크 후 강제 재실행
+을 반복한다.
+'''

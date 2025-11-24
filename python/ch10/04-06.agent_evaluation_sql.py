@@ -134,7 +134,10 @@ def find_tool_calls(messages):
                   for tc in getattr(m, 'tool_calls', [])]
     return tool_calls
 
-
+'''
+evaluator 함수는 파라미터가 정해져 있음 (run기반, dict기반)
+* dict기반은 agent_evaluation_rag.py 참고
+'''
 def contains_all_tool_calls_any_order(root_run: Run, example: Example) -> dict:
     """
     예상되는 모든 툴이 순서에 관계없이 호출되었는지 확인합니다.
@@ -150,6 +153,12 @@ def contains_all_tool_calls_any_order(root_run: Run, example: Example) -> dict:
         score = 1
     else:
         score = 0
+        
+    '''
+    evaluator 함수 반환값은 
+    run 기반인 경우, dict
+    dict 기반인 경우, bool, int, float, dict 중 하나로 반환되어야 한다.
+    '''
     return {"score": int(score), "key": "multi_tool_call_any_order"}
 
 
@@ -169,6 +178,7 @@ def contains_all_tool_calls_in_order(root_run: Run, example: Example) -> dict:
         score = 1
     else:
         score = 0
+        
     return {"score": int(score), "key": "multi_tool_call_in_order"}
 
 
@@ -197,6 +207,6 @@ experiment_results = evaluate(
     evaluators=[contains_all_tool_calls_any_order, contains_all_tool_calls_in_order,
                 contains_all_tool_calls_in_order_exact_match],
     experiment_prefix=experiment_prefix + "-trajectory",
-    num_repetitions=3,
+    num_repetitions=3, ## 반복 횟수
     metadata={"version": metadata},
 )
