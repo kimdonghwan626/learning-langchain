@@ -5,6 +5,12 @@ from langchain_core.messages import (
     trim_messages,
 )
 from langchain_openai import ChatOpenAI
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+api_key = os.getenv('OPENAI_API_KEY')
+llm = ChatOpenAI(model='gpt-4o', api_key=api_key)
 
 # 샘플 메시지 설정
 messages = [
@@ -25,7 +31,7 @@ messages = [
 trimmer = trim_messages(
     max_tokens=65,
     strategy='last', ## 'first' : 최신 메시지 부터 삭제, 'last' : 오래된 메시지부터 삭제
-    token_counter=ChatOpenAI(model='gpt-4o-mini'),
+    token_counter=llm,
     include_system=True, ##시스템 메시지 유지 여부
     allow_partial=False, ## max_tokens을 넘어갈 때, message 통째로 버릴지, message 일부만 자르고 살릴지 여부를 결정
     start_on='human', ## 어떤 메시지부터 잘라내야 할지 결정 'human' : 질문, 답변 삭제, 'assistant' : 답변 삭제

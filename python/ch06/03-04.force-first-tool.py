@@ -12,7 +12,8 @@ from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 
 '''
-ast.literal_eval : 문자열이 숫자 literal인 경우, 계산해서 반환됨. 함수 호출 등이 포함되어 있으면 예외 처리
+ast.literal_eval : 문자열이 숫자 literal인 경우, 계산해서 반환됨. 
+함수 호출 등이 포함되어 있으면 예외 처리
 '''
 @tool
 def calculator(query: str) -> str:

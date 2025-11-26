@@ -10,7 +10,9 @@ model_low_temp = ChatOpenAI(model='gpt-4o-mini', temperature=0.1)
 # 자연어 출력 생성용
 model_high_temp = ChatOpenAI(model='gpt-4o-mini', temperature=0.7)
 
-
+'''
+TypedDict : 키와 값의 타입 구조가 고정된 딕셔너리
+'''
 class State(TypedDict):
     # 대화 기록
     messages: Annotated[list, add_messages]

@@ -40,8 +40,14 @@ thread1 = {'configurable': {'thread_id': '1'}}
 result_1 = graph.invoke({'messages': [HumanMessage('안녕하세요, 저는 민혁입니다!')]}, thread1)
 result_2 = graph.invoke({'messages': [HumanMessage('제 이름이 뭐죠?')]}, thread1)
 
+'''
+state.values에 messages가 들어있음
+'''
 # 상태 확인
 print(graph.get_state(thread1))
 
+'''
+add_messages로 인해 messages에 메시지가 추가 된다. 
+'''
 #상태 업데이트
 graph.update_state(thread1, {'messages': [HumanMessage('저는 LLM이 좋아요!')]})

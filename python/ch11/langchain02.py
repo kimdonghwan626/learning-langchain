@@ -8,18 +8,13 @@ from langchain_core.output_parsers import StrOutputParser
 import os
 from pydantic import BaseModel
 from ch11.utils import pretty_print, printLog
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import TextLoader
+from langchain_core.runnables import chain
 
 load_dotenv()
 api_key = os.getenv('OPENAI_API_KEY')
 llm = ChatOpenAI(model='gpt-4o', api_key=api_key)
-embeddings = OpenAIEmbeddings(model='text-embedding-3-small')
-
-
-class RewritedQuery(BaseModel):
-    '''재작성한 사용자 질의를 담는 클래스'''
-    rewrited: str
-    '''재작성한 사용자 질의'''
-
 
 rewritePromptTemplate = PromptTemplate.from_template('''
 당신은 질의 재작성 어시스턴트입니다.
@@ -36,14 +31,47 @@ LLM 또는 검색 시스템이 더 나은 답변을 생성할 수 있도록 합�
 - 질문에 절대 답변하지 마세요.
 
 사용자 질의:
-{query}''')
+{query}
 
+답변:''')
 
-structured_llm = llm.with_structured_output(RewritedQuery)
+rewrite_chain = rewritePromptTemplate | llm | StrOutputParser()
 
+loader = TextLoader('ch11\person.txt', encoding='utf-8')
+docs = loader.load()
 
-rewriteChain = rewritePromptTemplate | structured_llm | StrOutputParser()
+splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=0)
+splitted_docs = splitter.split_documents(docs)
 
-query = '''홍길동이라는 사람이 있는 것 같은데 이 사람이 누구인지 설명해줄 수 있나??'''
-response = rewriteChain.invoke(query)
-print(response)
+embeddings = OpenAIEmbeddings(model='text-embedding-3-small')
+db = InMemoryVectorStore.from_documents(splitted_docs, embeddings)
+retreiver = db.as_retriever(search_kwargs={"k": 3})
+
+promptTemplate = PromptTemplate.from_template('''
+다음 Context를 참고하여 사용자 질의에 답변해주세요.
+200자 미만으로 답변해주세요.
+
+Context:
+{context}
+
+사용자 질의:
+{query}
+
+답변:''')
+
+@chain
+def llm_chain(query: str):
+    printLog(query)
+    
+    docs = retreiver.invoke(query)
+    print(docs)
+    
+    prompt = promptTemplate.invoke({"context" : docs, "query" : query})
+    answer = llm.invoke(prompt)
+    return answer
+
+chain = rewrite_chain | llm_chain
+
+query = '''그.. 홍길동이라는 사람이 있는 것 같은데 이 사람이 누구인지 설명해줄 수 있나??'''
+result = chain.invoke(query)
+printLog(result.content)

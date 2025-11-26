@@ -93,7 +93,9 @@ def router_node(state: State) -> State:
         'messages': [user_message, res],
     }
 
-
+'''
+domain 값을 확인하여 다음에 실행할 노드 이름을 반환
+'''
 def pick_retriever(
     state: State,
 ) -> Literal['retrieve_medical_records', 'retrieve_insurance_faqs']:

@@ -5,7 +5,13 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, START, END, add_messages
 from langgraph.checkpoint.memory import MemorySaver
 
+'''
+Annotated : 타입에 메타데이터를 부여하는 용도로 사용, 첫 번째인자는 유효한 타입을 넣어야 한다.
+메타데이터는 __metadata__로 접근할 수 있다.
 
+add_messages : Status의 messages 필드를 덮어쓰는게 아닌 추가하는 방식으로 업데이트하라고 LangGraph에게 알려주는 함수
+이 함수는 LangGraph 내부에서 노드 실행 후 상태를 병합할 때 자동으로 호출된다.
+'''
 class State(TypedDict):
     # 메시지의 유형은 list이다. 
     # 어노테이션의 `add_messages` 함수는 상태를 업데이트하는 방법이다. 

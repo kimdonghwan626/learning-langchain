@@ -8,6 +8,11 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import START, StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+api_key = os.getenv('OPENAI_API_KEY')
 
 '''
 @tool : 함수가 LangChain Tool 객체로 변환하게 해주는 데코레이터
@@ -25,7 +30,7 @@ def calculator(query: str) -> str:
 
 search = DuckDuckGoSearchRun()
 tools = [search, calculator]
-model = ChatOpenAI(model='gpt-4o-mini', temperature=0.1).bind_tools(tools)
+model = ChatOpenAI(model='gpt-4o', temperature=0.1, api_key = api_key).bind_tools(tools)
 
 
 class State(TypedDict):
@@ -64,5 +69,7 @@ input = {
     ]
 }
 
-for c in graph.stream(input):
-    print(c)
+# for c in graph.stream(input):
+#     print(c)
+
+print(graph.invoke(input))
