@@ -25,7 +25,7 @@ def calculator(query: str) -> str:
 
 search = DuckDuckGoSearchRun()
 tools = [search, calculator]
-model = ChatOpenAI(model='gpt-4o-mini', temperature=0.1).bind_tools(tools)
+model = ChatOpenAI(model='gpt-4o', temperature=0.1, api_key=api_key).bind_tools(tools)
 
 
 class State(TypedDict):
@@ -60,10 +60,8 @@ stream_mode에 들어갈 값은 다음과 같다.
 values : 기본
 updates : 변경된 부분만 출력
 debug : 이벤트
-messages : 메시지만 출력
-
-여러 개도 가능
+messages : 메시지만 출력 -> 책에는 안적혀 있는데 되는 것 같음
 '''
 
-for c in graph.stream(input, stream_mode='debug'):
+for c in graph.stream(input, stream_mode='messages'):
     print(c)
