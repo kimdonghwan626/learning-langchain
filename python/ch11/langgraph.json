@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "graph6": "./langgraph06.py:graph"
+  },
+  "env": ".env"
+}
